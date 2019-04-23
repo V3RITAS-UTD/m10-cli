@@ -63,7 +63,7 @@ async function main () {
     )
 
     // copy
-    await copy('./templates/starter', pathDir)
+    await copy(path.join(__dirname, './templates/starter'), pathDir)
     // change custom files with options
     let filesToCompile = ['package.json', 'app.js']
     for (let i = 0; i < filesToCompile.length; i++) {

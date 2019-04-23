@@ -1,14 +1,17 @@
 {
   "name": "m10-cli",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "Scaffold tool to easily bootstrap a m10-based project",
-  "main": "index.js",
+  "main": "cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/V3RITAS-UTD/m10-cli.git"
+  },
+  "bin": {
+    "m10-cli": "./cli.js"
   },
   "keywords": [
     "m10",
