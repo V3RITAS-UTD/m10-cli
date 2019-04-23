@@ -1,3 +1,4 @@
+require('dotenv').config()
 const m10 = require('m10')
 const express = require('express')
 const bodyparser = require('body-parser')
@@ -16,7 +17,7 @@ app.use(bodyparser.json())
 app.use(morgan('tiny'))
 <%_ if (mongodb) { _%>
 // mongodb
-app.use(expressMongoDb('mongodb://localhost/test'));
+app.use(expressMongoDb(process.env.MONGODB_URL || 'mongodb://localhost/test'));
 <%_ } _%>
 // load config into this app
 m10.init(config, app)
