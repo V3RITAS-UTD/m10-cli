@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "name": "<%= projectName %>",
+  "version": "0.1.0",
+  "description": "<%= projectName %> generated and based on m10",
+  "main": "app.js",
+  "scripts": {
+    "dev": "NODE_ENV='dev' nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "echo \"\n\n=========================\nThank you for using m10! Hint: to quickly add CRUD routes run:\nm10-cli add crud\n=========================\n\n\""
+  },
+  "license": "",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "debug": "^4.1.1",
+    "express": "^4.16.4",
+    <%_ if (mongodb) { _%>
+    "express-mongo-db": "^2.0.4",
+    <%_ } _%>
+    "helmet": "^3.16.0",
+    "m10": "^0.1.2",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.11",
+    "prettier-standard": "^9.1.1"
+  }
+}
