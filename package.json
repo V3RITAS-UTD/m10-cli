@@ -1,6 +1,6 @@
 {
   "name": "m10-cli",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Scaffold tool to easily bootstrap a m10-based project",
   "main": "cli.js",
   "scripts": {

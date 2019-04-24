@@ -65,7 +65,7 @@ async function main () {
     // copy
     await copy(path.join(__dirname, './templates/starter'), pathDir)
     // change custom files with options
-    let filesToCompile = ['package.json', 'app.js']
+    let filesToCompile = ['package.json', 'app.js', 'README.md']
     for (let i = 0; i < filesToCompile.length; i++) {
       let f = filesToCompile[i]
       let p = `${pathDir}/${f}`
