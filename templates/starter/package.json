@@ -6,8 +6,9 @@
   "main": "app.js",
   "scripts": {
     "dev": "NODE_ENV='dev' nodemon app.js",
+    "prod": "NODE_ENV='prod' node app",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "echo \"\n\n=========================\nThank you for using m10! Hint: to quickly add CRUD routes run:\nm10-cli add crud\n=========================\n\n\""
+    "postinstall": "echo \"\n\n=========================\nThank you for using m10! Hint: to quickly add a route run:\nm10-cli add --route\n=========================\n\n\""
   },
   "license": "",
   "dependencies": {
