@@ -1,12 +1,12 @@
-/*
-query: { // for queries like ?limit=32
-  limit: Joi.number().max(100).required()
-},
-body: { // for body like POST
-  title: Joi.string().required()
-  description: Joi.string()
-},
-params: { // for route params like /todo/:id
-  id: Joi.string()
-}
-*/
+  /*
+    query: { // for queries like ?limit=32
+      limit: Joi.number().max(100).required()
+    },
+    body: { // for body like POST
+      title: Joi.string().required()
+      description: Joi.string()
+    },
+    params: { // for route params like /todo/:id
+      id: Joi.string()
+    }
+  */

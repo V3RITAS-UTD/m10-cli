@@ -4,6 +4,8 @@
 
 Scaffold tool for [m10](https://github.com/V3RITAS-UTD/m10)-based projects
 
+**Work in progress!**
+
 # Install
 
 `npm i -g m10-cli`
