@@ -87,7 +87,7 @@ async function main () {
     console.log(`cd ${pathDir} && npm install`)
   } else if (argv._[0] == 'add') {
     // TODO: look for generic config[, .json5, .js]
-    let configFilePath = path.join(__dirname, './config.json')
+    let configFilePath = path.resolve('./config.json')
     let configFileExists = fs.existsSync(configFilePath)
 
     // TODO: allow user to choose config file if not found
@@ -199,12 +199,15 @@ async function continueAdd (setup, data) {
     joiDefinition = data
       .substring(0, data.length - 2)
       .replace('Joi.object().keys({', '')
-  if (['POST', 'PUT'].indexOf(setup.httpMethod) > -1) {
-    joiDefinition = '{body:{' + joiDefinition + '}}'
-  } else joiDefinition = '{query:{' + joiDefinition + '}}'
+  // TODO: indetify params in route
+  if (data) {
+    if (['POST', 'PUT'].indexOf(setup.httpMethod) > -1) {
+      joiDefinition = '{body:{' + joiDefinition + '}}'
+    } else joiDefinition = '{query:{' + joiDefinition + '}}'
+  }
   let p = path.join(__dirname, './templates/route/manager.js')
   let r = await ejs.renderFile(p, Object.assign(setup, { joiDefinition }))
-  let dest = path.join(__dirname, setup.routeName + '.js')
+  let dest = path.join('./', setup.routeName + '.js')
   // lint js
   let tryToLint = standard.lintTextSync(r, { fix: true })
   let lintedJs = tryToLint.results[0].output
@@ -216,7 +219,7 @@ async function continueAdd (setup, data) {
   currentConfig.routes.push({
     path: setup.routePath,
     method: setup.httpMethod,
-    manager: dest
+    manager: './' + setup.routeName + '.js'
   })
   fs.writeFileSync(setup.configFilePath, JSON.stringify(currentConfig, null, 4))
   console.log(
