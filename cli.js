@@ -341,17 +341,11 @@ async function continueCrudAdd (setup, data) {
     : '/* Joi.object().keys({name: Joi.string()}) */'
 
   // handler file
-  await compileAndSave(
-    './templates/crud/handler/index.js',
-    '/handler/' + setup.name + '.js',
-    setup
-  )
+  const handlerPath = 'handler/' + setup.name + '.js'
+  await compileAndSave('./templates/crud/handler/index.js', handlerPath, setup)
   // validation file
-  await compileAndSave(
-    './templates/crud/schema/index.js',
-    '/schema/' + setup.name + '.js',
-    setup
-  )
+  const schemaPath = 'schema/' + setup.name + '.js'
+  await compileAndSave('./templates/crud/schema/index.js', schemaPath, setup)
 
   // update config
   // TODO: handle fail
@@ -359,7 +353,9 @@ async function continueCrudAdd (setup, data) {
   // TODO: handle fail
   saveConfig(setup.configFilePath, currentConfig)
 
-  console.log(`Done, config file updated and files generated`)
+  console.log(
+    `Done, config file updated and files generated\n${schemaPath}\n${handlerPath}`
+  )
 }
 
 main()
