@@ -278,23 +278,21 @@ function getJoiDefinition (data, httpMethod) {
 
 async function continueAdd (setup, data) {
   let joiDefinition = getJoiDefinition(data, setup.httpMethod)
-  let p = path.join(__dirname, './templates/route/manager.js')
-  let r = await ejs.renderFile(p, Object.assign(setup, { joiDefinition }))
-  let dest = path.join('./', setup.routeName + '.js')
-  // lint js
-  let tryToLint = standard.lintTextSync(r, { fix: true })
-  let lintedJs = tryToLint.results[0].output
-  fs.writeFileSync(dest, lintedJs)
-  // update config
-  let currentConfig = JSON.parse(
-    fs.readFileSync(setup.configFilePath).toString()
+  await compileAndSave(
+    './templates/route/manager.js',
+    setup.routeName + '.js',
+    Object.assign(setup, { joiDefinition })
   )
+
+  // update config
+  let currentConfig = getConfig(setup.configFilePath)
   currentConfig.routes.push({
     path: setup.routePath,
     method: setup.httpMethod,
     manager: './' + setup.routeName + '.js'
   })
-  fs.writeFileSync(setup.configFilePath, JSON.stringify(currentConfig, null, 4))
+  saveConfig(setup.configFilePath, currentConfig)
+
   console.log(
     `Done, config file updated and route and validation generated as manager (one file):\n${dest}`
   )
