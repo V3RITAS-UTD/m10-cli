@@ -14,10 +14,10 @@ Scaffold tool for [m10](https://github.com/V3RITAS-UTD/m10)-based projects
 
  * [Create a new boilerplate project](#create-a-new-boilerplate-project)
  * [Generate CRUD resources for existing project](#generate-crud-resources-for-existing-project)
- * [Add route/validation to existing project](#add-route-validation-to-existing-project)
+ * [Add route/validation to existing project](#add-routevalidation-to-existing-project)
 
 
-# Create a new boilerplate project
+## Create a new boilerplate project
 
 `m10-cli new folder-name-here`
 
@@ -44,7 +44,7 @@ Will create a new boilerplate with the following folders/files (you don't need t
    		Empty folder for middleware files
 
 
-# Generate CRUD resources for existing project
+## Generate CRUD resources for existing project
 
 In the root of your m10 project run:
 
@@ -53,7 +53,7 @@ In the root of your m10 project run:
 Follow the prompts and will generate a complete CRUD handlers/validations automatically with MongoDB support.
 
 
-# Add route/validation to existing project
+## Add route/validation to existing project
 
 In the root of your m10 project run:
 
