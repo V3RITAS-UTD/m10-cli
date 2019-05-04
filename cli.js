@@ -350,6 +350,42 @@ async function continueCrudAdd (setup, data) {
   // update config
   // TODO: handle fail
   let currentConfig = getConfig(setup.configFilePath)
+  const crudSpec = {
+    basePah: `${setup.name}`,
+    routesToCreate: [
+      {
+        extension: 'insertOne',
+        method: 'POST'
+      },
+      {
+        extension: 'findOne',
+        method: 'GET',
+        appendPath: '/:id'
+      },
+      {
+        extension: 'findAll',
+        method: 'GET'
+      },
+      {
+        extension: 'updateOne',
+        method: 'PUT',
+        appendPath: '/:id'
+      },
+      {
+        extension: 'deleteOne',
+        method: 'DELETE',
+        appendPath: '/:id'
+      }
+    ]
+  }
+  crudSpec.routesToCreate.forEach(r => {
+    currentConfig.routes.push({
+      path: crudSpec.basePah + (r.appendPath ? r.appendPath : ''),
+      method: r.method,
+      handler: `${handlerPath.replace('.js', '')}.${r.extension}`,
+      validation: `${schemaPath.replace('.js', '')}.${r.extension}`
+    })
+  })
   // TODO: handle fail
   saveConfig(setup.configFilePath, currentConfig)
 
