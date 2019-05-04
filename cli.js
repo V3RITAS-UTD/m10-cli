@@ -220,7 +220,7 @@ async function main () {
             type: 'toggle',
             name: 'provideJsonJoi',
             message:
-              'Do you have a JSON that describes a valid input? (we will generate a Joi validation from this)',
+              'Do you have a JSON that describes a valid resource input (for insert/definition)? (we will generate a Joi validation from this)',
             initial: false,
             active: 'yes',
             inactive: 'no'
@@ -337,7 +337,7 @@ function getConfig (path) {
 
 async function continueCrudAdd (setup, data) {
   setup.joiDefinition = data
-    ? getJoiDefinition(data)
+    ? data
     : '/* Joi.object().keys({name: Joi.string()}) */'
 
   // handler file
