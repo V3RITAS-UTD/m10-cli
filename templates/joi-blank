@@ -1,3 +1,4 @@
+{
   /*
     query: { // for queries like ?limit=32
       limit: Joi.number().max(100).required()
@@ -10,3 +11,4 @@
       id: Joi.string()
     }
   */
+}

@@ -1,7 +1,7 @@
 const { Joi } = require('m10') // import joi lib from m10
 
 /*
-	This is the validation file for <%_ name _%> routes,
+	This is the validation file for <%= name %> routes,
 	for each exported objects you can validate HTTP `query` / `params` / `body`
 	via Joi definitions.
 	~ Generated via m10-cli CRUD type `m10-cli add crud`

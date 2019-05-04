@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const prompts = require('prompts')
 const path = require('path')
-const fs = require('fs')
+const fs = require('fs-extra')
 const ejs = require('ejs')
 const copy = require('recursive-copy')
 const concat = require('concat-stream')
@@ -98,16 +98,15 @@ async function main () {
     console.log(`cd ${pathDir} && npm install`)
   } else if (argv._[0] == 'add') {
     debug('add command')
+    // TODO: look for generic config[, .json5, .js]
+    let configFilePath = path.resolve('./config.json')
+    let configFileExists = fs.existsSync(configFilePath)
+    // TODO: allow user to choose config file if not found
+    if (configFileExists == false) {
+      return cleanError(`Config file not found in ${configFilePath}`)
+    }
     if (argv.type == 'route') {
       debug('route type')
-      // TODO: look for generic config[, .json5, .js]
-      let configFilePath = path.resolve('./config.json')
-      let configFileExists = fs.existsSync(configFilePath)
-
-      // TODO: allow user to choose config file if not found
-      if (configFileExists == false) {
-        return cleanError(`Config file not found in ${configFilePath}`)
-      }
 
       let setup = await prompts(
         [
@@ -205,7 +204,57 @@ async function main () {
       }
     } else if (argv.type == 'crud') {
       debug('crud type')
-      console.log('CRUD!')
+      let setup = await prompts(
+        [
+          {
+            type: 'text',
+            name: 'name',
+            message: 'CRUD resource name',
+            initial: 'todo',
+            validate: value =>
+              value.match(/[^\w]+/g) === null
+                ? true
+                : 'Only alphanumeric allowed'
+          },
+          {
+            type: 'toggle',
+            name: 'provideJsonJoi',
+            message:
+              'Do you have a JSON that describes a valid input? (we will generate a Joi validation from this)',
+            initial: false,
+            active: 'yes',
+            inactive: 'no'
+          },
+          {
+            type: prev => (prev == true ? 'text' : null),
+            name: 'validationStarter',
+            message:
+              'Enter a JSON describing a valid input - Press enter to skip',
+            validate: value => {
+              if (value === '') return true
+              try {
+                JSON.parse(value)
+                return true
+              } catch (e) {
+                return 'Provide a valid JSON or skip this step by deleting and pressing enter'
+              }
+            }
+          }
+        ],
+        { onCancel }
+      )
+      setup.configFilePath = configFilePath
+      if (setup.provideJsonJoi == true && setup.validationStarter !== '') {
+        let jsonObj = JSON.parse(setup.validationStarter)
+        let generator = joiMachine.obj()
+        generator.pipe(
+          concat({ encoding: 'string' }, continueCrudAdd.bind(this, setup))
+        )
+        generator.write(jsonObj)
+        generator.end()
+      } else {
+        continueCrudAdd(setup)
+      }
     }
   } else {
     yargs.showHelp()
@@ -213,18 +262,22 @@ async function main () {
   }
 }
 
-async function continueAdd (setup, data) {
+function getJoiDefinition (data, httpMethod) {
   let joiDefinition = JOI_BLANK_TEMPLATE
-  if (data)
+  if (data) {
     joiDefinition = data
       .substring(0, data.length - 2)
       .replace('Joi.object().keys({', '')
-  // TODO: indetify params in route
-  if (data) {
-    if (['POST', 'PUT'].indexOf(setup.httpMethod) > -1) {
-      joiDefinition = '{body:{' + joiDefinition + '}}'
-    } else joiDefinition = '{query:{' + joiDefinition + '}}'
   }
+  if (httpMethod && ['POST', 'PUT'].indexOf(httpMethod) > -1) {
+    joiDefinition = '{body:{' + joiDefinition + '}}'
+  } else joiDefinition = '{query:{' + joiDefinition + '}}'
+
+  return joiDefinition
+}
+
+async function continueAdd (setup, data) {
+  let joiDefinition = getJoiDefinition(data, setup.httpMethod)
   let p = path.join(__dirname, './templates/route/manager.js')
   let r = await ejs.renderFile(p, Object.assign(setup, { joiDefinition }))
   let dest = path.join('./', setup.routeName + '.js')
@@ -245,6 +298,68 @@ async function continueAdd (setup, data) {
   console.log(
     `Done, config file updated and route and validation generated as manager (one file):\n${dest}`
   )
+}
+
+async function compileAndSave (from, to, setup) {
+  debug('compile and save', from, to, setup)
+  let fromPath = path.join(__dirname, from)
+  debug('fromPath', fromPath)
+  let compiledFile = await ejs.renderFile(fromPath, setup)
+  debug('ejs compile output', compiledFile)
+  let destPath = path.join('./', to)
+
+  // lint only javascript
+  if (to.endsWith('.js')) {
+    // TODO: add a try-catch and handle fail
+    // lint js
+    let lintFile = standard.lintTextSync(compiledFile, { fix: true })
+    debug('lint file output', lintFile)
+    let lintedJs = lintFile.results[0].output
+    compiledFile = lintedJs
+  }
+
+  // ensure directories exist
+  fs.ensureFileSync(destPath)
+
+  // save file
+  fs.writeFileSync(destPath, compiledFile)
+}
+
+function saveConfig (path, updatedConfig) {
+  fs.writeFileSync(path, JSON.stringify(updatedConfig, null, 4))
+  return true
+}
+
+function getConfig (path) {
+  let currentConfig = JSON.parse(fs.readFileSync(path).toString())
+  return currentConfig
+}
+
+async function continueCrudAdd (setup, data) {
+  setup.joiDefinition = data
+    ? getJoiDefinition(data)
+    : '/* Joi.object().keys({name: Joi.string()}) */'
+
+  // handler file
+  await compileAndSave(
+    './templates/crud/handler/index.js',
+    '/handler/' + setup.name + '.js',
+    setup
+  )
+  // validation file
+  await compileAndSave(
+    './templates/crud/schema/index.js',
+    '/schema/' + setup.name + '.js',
+    setup
+  )
+
+  // update config
+  // TODO: handle fail
+  let currentConfig = getConfig(setup.configFilePath)
+  // TODO: handle fail
+  saveConfig(setup.configFilePath, currentConfig)
+
+  console.log(`Done, config file updated and files generated`)
 }
 
 main()
