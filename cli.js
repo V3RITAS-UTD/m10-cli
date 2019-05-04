@@ -34,7 +34,7 @@ const argv = yargs
 
 debug('argv parse', argv)
 
-// return pretty error without stacktrace
+// return pretty error without stacktrace for pre-defined errors
 function cleanError (msg) {
   console.error('Error: ' + msg)
   return process.exit(1)
