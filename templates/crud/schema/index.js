@@ -9,12 +9,8 @@ const { Joi } = require('m10') // import joi lib from m10
 
 const schema = <%= joiDefinition %>
 
-// param id definition 
-const idDef = <%_ if (mongodb) { _%>
-Joi.string().length(24, 'utf8').required() // mongodb ObjectID
-<%_ } else { _%>
-Joi.string().required()
-<%_ } _%>
+// param id definition (mongodb ObjectID length)
+const idDef = Joi.string().length(24, 'utf8').required()
 
 // find all with limit and offset (optional)
 module.exports.findAll = {
