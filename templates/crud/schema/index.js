@@ -9,6 +9,9 @@ const { Joi } = require('m10') // import joi lib from m10
 
 const schema = <%= joiDefinition %>
 
+// param id definition
+const idDef = Joi.string().length(24, 'utf8').required()
+
 // find all with limit and offset (optional)
 module.exports.findAll = {
 	query: {
@@ -20,7 +23,7 @@ module.exports.findAll = {
 // find one, id is required (as param /:id)
 module.exports.findOne = {
 	params: {
-		id: Joi.string().required()
+		id: idDef
 	}
 }
 
@@ -37,14 +40,14 @@ module.exports.updateOne = {
 	*/
 	body: schema,
 	params: {
-		id: Joi.string().required()
+		id: idDef
 	}
 }
 
 // delete one, id is required (as param /:id)
 module.exports.deleteOne = {
 	params: {
-		id: Joi.string().required()
+		id: idDef
 	}
 }
 

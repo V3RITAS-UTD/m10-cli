@@ -349,7 +349,7 @@ async function continueCrudAdd (setup, data) {
   // TODO: handle fail
   let currentConfig = getConfig(setup.configFilePath)
   const crudSpec = {
-    basePah: `${setup.name}`,
+    basePah: `/${setup.name}`,
     routesToCreate: [
       {
         extension: 'insertOne',
@@ -380,8 +380,8 @@ async function continueCrudAdd (setup, data) {
     currentConfig.routes.push({
       path: crudSpec.basePah + (r.appendPath ? r.appendPath : ''),
       method: r.method,
-      handler: `${handlerPath.replace('.js', '')}.${r.extension}`,
-      validation: `${schemaPath.replace('.js', '')}.${r.extension}`
+      handler: `./${handlerPath.replace('.js', '')}.${r.extension}`,
+      validation: `./${schemaPath.replace('.js', '')}.${r.extension}`
     })
   })
   // TODO: handle fail
